@@ -130,7 +130,7 @@ MonoBehaviour:
   fuseTime: 3
   remoteFailsafeTime: 0
   damageAmount: 1
-  explosionPrefab: {fileID: 3098347989684852210, guid: fd3ea929ee9e4a34a8f66f68bf0ab6dd, type: 3}
+  explosionPrefab: {fileID: 2896334292534178870, guid: 06ac01dfded3aee478e0d93aea7fe872, type: 3}
   explosionVisualDuration: 0.5
   explodeAnimDuration: 0.4
   normalModel: {fileID: 6580054525261609475}

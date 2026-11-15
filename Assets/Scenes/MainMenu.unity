@@ -4531,7 +4531,11 @@ MonoBehaviour:
   stageTheme: {fileID: 8300000, guid: b909f58d9e6cc20438d3559f36779d37, type: 3}
   playerDied: {fileID: 8300000, guid: da3e668d715306e4cabd020dba13496d, type: 3}
   gameOver: {fileID: 8300000, guid: 3cebdbaa90c887042b9937d43f882924, type: 3}
-  perStageThemes: []
+  perStageThemes:
+  - {fileID: 8300000, guid: b909f58d9e6cc20438d3559f36779d37, type: 3}
+  - {fileID: 8300000, guid: b909f58d9e6cc20438d3559f36779d37, type: 3}
+  - {fileID: 8300000, guid: 9512d729a9dfa8d4b84678ed770f6e0b, type: 3}
+  - {fileID: 8300000, guid: 9512d729a9dfa8d4b84678ed770f6e0b, type: 3}
   musicVolume: 0.6
   sfxVolume: 1
   pausedMusicMultiplier: 0.3

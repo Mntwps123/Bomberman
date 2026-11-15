@@ -1,77 +1,84 @@
+using System.Collections;
 using UnityEngine;
 
+// A normal follow camera: always centered on the player, no map limits.
 public class ArenaCamera : MonoBehaviour
 {
-    [SerializeField] private Transform target;
-    [SerializeField] private float paddingMultiplier = 1.05f;
-    [SerializeField] private float smoothSpeed = 8f;
-    [SerializeField] private float fixedHeight = 20f;
-    [SerializeField, Range(0f, 0.4f)] private float uiTopReserve = 0.15f; // fraction of screen height reserved for UI at top
+    [SerializeField] private Transform target; // found automatically if left empty
+
+    [Header("Follow")]
+    [Tooltip("Higher = lazier camera, lower = snappier. 0 = glued to the player.")]
+    [SerializeField] private float smoothTime = 0.1f;
+
+    [Header("View")]
+    [Tooltip("90 = straight down. Lower tilts the camera back, for example 60 for an angled 3D view.")]
+    [Range(30f, 90f)]
+    [SerializeField] private float pitch = 90f;
+    [Tooltip("How far the camera sits from the player (needs to be big enough to clear the walls).")]
+    [SerializeField] private float distance = 14f;
+    [Tooltip("Zoom when the camera is Orthographic. Smaller = closer.")]
+    [SerializeField] private float orthographicSize = 6f;
+
+    [Header("Player position on screen")]
+    [Tooltip("Shifts the view. Positive Z puts the player lower on screen, which leaves room for the HUD at the top.")]
+    [SerializeField] private Vector3 targetOffset = Vector3.zero;
 
     private Camera cam;
-    private float fixedZ;
-    private float minX, maxX;
+    private Vector3 velocity;
+    private bool snapped = false;
+
+    void Awake()
+    {
+        cam = GetComponent<Camera>();
+    }
 
     void Start()
     {
-        cam = GetComponent<Camera>();
-        transform.rotation = Quaternion.Euler(90f, 0f, 0f);
-
-        SetupBounds();
+        if (target == null)
+            StartCoroutine(FindTarget());
     }
 
-    void SetupBounds()
+    // The player is spawned by a script, so it may not exist on the very first frame
+    IEnumerator FindTarget()
     {
-        int width = GridManager.Instance.Width;
-        int height = GridManager.Instance.Height;
-        float tileSize = GridManager.Instance.TileSize;
-
-        float arenaWidth = width * tileSize;
-        float arenaHeight = height * tileSize;
-
-        // Ortho size needs to fit arena height WITHIN the space left after reserving UI room
-        // If UI takes uiTopReserve fraction of screen, arena needs to fit in the remaining (1 - uiTopReserve)
-        float usableHeightFraction = 1f - uiTopReserve;
-        float orthoSize = (arenaHeight / 2f / usableHeightFraction) * paddingMultiplier;
-        cam.orthographicSize = orthoSize;
-
-        // Arena's natural vertical center in world space
-        float arenaCenterZ = (height - 1) * tileSize / 2f;
-
-        // Shift camera's Z so the arena sits in the LOWER part of the view,
-        // leaving empty world space at the "top" of screen for UI to overlay
-        float worldShift = orthoSize * uiTopReserve;
-        fixedZ = arenaCenterZ + worldShift; // push camera center upward off the arena, so arena appears lower on screen
-
-        float visibleHalfWidth = orthoSize * cam.aspect;
-        float arenaLeft = 0f;
-        float arenaRight = (width - 1) * tileSize;
-
-        minX = arenaLeft + visibleHalfWidth;
-        maxX = arenaRight - visibleHalfWidth;
-
-        if (minX > maxX)
+        while (target == null)
         {
-            float center = (arenaLeft + arenaRight) / 2f;
-            minX = maxX = center;
+            var player = FindFirstObjectByType<PlayerGridMovement>();
+            if (player != null)
+                target = player.transform;
+            else
+                yield return new WaitForSeconds(0.2f);
         }
+    }
 
-        float startX = Mathf.Clamp(target != null ? target.position.x : (arenaLeft + arenaRight) / 2f, minX, maxX);
-        transform.position = new Vector3(startX, fixedHeight, fixedZ);
+    public void SetTarget(Transform newTarget)
+    {
+        target = newTarget;
+        snapped = false; // jump straight to the new target
     }
 
     void LateUpdate()
     {
         if (target == null) return;
 
-        float desiredX = Mathf.Clamp(target.position.x, minX, maxX);
-        float smoothedX = Mathf.Lerp(transform.position.x, desiredX, smoothSpeed * Time.deltaTime);
+        Quaternion rotation = Quaternion.Euler(pitch, 0f, 0f);
+        transform.rotation = rotation;
 
-        transform.position = new Vector3(smoothedX, fixedHeight, fixedZ);
-    }
+        if (cam != null && cam.orthographic)
+            cam.orthographicSize = orthographicSize;
 
-    public void SetTarget(Transform newTarget)
-    {
-        target = newTarget;
+        // Sit 'distance' away from the player, along the direction the camera looks
+        Vector3 focus = target.position + targetOffset;
+        Vector3 desired = focus - rotation * Vector3.forward * distance;
+
+        if (!snapped)
+        {
+            transform.position = desired;
+            velocity = Vector3.zero;
+            snapped = true;
+            return;
+        }
+
+        transform.position = Vector3.SmoothDamp(transform.position, desired, ref velocity, smoothTime);
     }
 }
