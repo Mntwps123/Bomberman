@@ -7043,16 +7043,19 @@ MonoBehaviour:
   tileSize: 1
   floorPrefabs:
   - {fileID: 8028301032741196093, guid: 0afcb11f94fdbbd46a9c9178df9910b2, type: 3}
-  - {fileID: 8028301032741196093, guid: 7ab8193d76c8b7d4ba9b8dbaba298761, type: 3}
-  - {fileID: 8028301032741196093, guid: 7a1e9cce37be0f645b74fe032f5fc1dc, type: 3}
   wallPrefabs:
   - {fileID: 5453299534465241181, guid: be14a79bc1ccf48409c5c692eadcb49b, type: 3}
-  - {fileID: 5453299534465241181, guid: be14a79bc1ccf48409c5c692eadcb49b, type: 3}
+  - {fileID: 5453299534465241181, guid: bfe86dbb7c40f7540921f86b9d53f7c1, type: 3}
   - {fileID: 5453299534465241181, guid: 8b93128f1537d52489f2babd91fa503b, type: 3}
+  - {fileID: 5453299534465241181, guid: 6244abc0e3f2532428be7c2cdd91f5ca, type: 3}
+  - {fileID: 5453299534465241181, guid: a3e7f5bebf645dd40a8d25281a247026, type: 3}
+  - {fileID: 5453299534465241181, guid: 98ff13071723c4648bd6b8d919dd828f, type: 3}
   blockPrefabs:
   - {fileID: 4617447207701625058, guid: eb2f11463d1dc7449b5907c0602faed0, type: 3}
   - {fileID: 4617447207701625058, guid: c905270827ff46949bd43d59c60952e7, type: 3}
   - {fileID: 4617447207701625058, guid: 017862f66c7a7a14c9c50c1d4495937e, type: 3}
+  - {fileID: 4617447207701625058, guid: 012aa25b190f7c54f979d70fa2c76f98, type: 3}
+  - {fileID: 4617447207701625058, guid: 7c6a4082dcc391b4e93530f502dded0b, type: 3}
   blockDensity: 0.4
   spawnClearRadius: 2
   exitZoneWidthFraction: 0.25
