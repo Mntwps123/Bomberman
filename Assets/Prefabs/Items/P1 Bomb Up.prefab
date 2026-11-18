@@ -142,7 +142,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PowerUpItem
   type: 0
   scoreValue: 0
-  pickupSfx: {fileID: 0}
+  pickupSfx: {fileID: 8300000, guid: e6e0fec233fe4c94891ba229ac7b0c31, type: 3}
   popupColor: {r: 1, g: 1, b: 1, a: 1}
 --- !u!1001 &4036950580833696236
 PrefabInstance:

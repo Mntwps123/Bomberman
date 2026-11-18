@@ -10,13 +10,14 @@ public class AudioManager : MonoBehaviour
     [SerializeField] private AudioClip titleScreen;
     [SerializeField] private AudioClip startLevel;   // plays once when a stage begins
     [SerializeField] private AudioClip stageTheme;   // loops after startLevel finishes
+    [SerializeField] private AudioClip invincibleMusic; // loops while the Invincible Suit is active
+
+    [Tooltip("Optional: a different theme per stage. Index 0 = Stage 1. Empty slots fall back to Stage Theme.")]
+    [SerializeField] private AudioClip[] perStageThemes;
 
     [Header("Death / Game Over")]
     [SerializeField] private AudioClip playerDied;
     [SerializeField] private AudioClip gameOver;
-
-    [Tooltip("Optional: a different theme per stage. Index 0 = Stage 1. Empty slots fall back to Stage Theme.")]
-    [SerializeField] private AudioClip[] perStageThemes;
 
     [Header("Volume")]
     [Range(0f, 1f)][SerializeField] private float musicVolume = 0.7f;
@@ -32,6 +33,10 @@ public class AudioManager : MonoBehaviour
     private AudioSource sfxSource;
     private Coroutine musicRoutine;
     private bool ducked = false;
+    private bool inGameplayScene = false;
+    private bool invincibleActive = false;
+
+    public float PlayerDiedLength => playerDied != null ? playerDied.length : 0f;
 
     void Awake()
     {
@@ -48,7 +53,7 @@ public class AudioManager : MonoBehaviour
 
         musicSource = gameObject.AddComponent<AudioSource>();
         musicSource.playOnAwake = false;
-        musicSource.spatialBlend = 0f; // 2D sound
+        musicSource.spatialBlend = 0f;
 
         sfxSource = gameObject.AddComponent<AudioSource>();
         sfxSource.playOnAwake = false;
@@ -78,18 +83,47 @@ public class AudioManager : MonoBehaviour
 
     void HandleScene(int buildIndex)
     {
-        if (musicRoutine != null)
-        {
-            StopCoroutine(musicRoutine);
-            musicRoutine = null;
-        }
+        bool isMenu = buildIndex == mainMenuBuildIndex;
+        bool isWin = buildIndex == winSceneBuildIndex;
+        inGameplayScene = !isMenu && !isWin;
 
-        if (buildIndex == mainMenuBuildIndex)
-            musicRoutine = StartCoroutine(SwitchTo(titleScreen, null, true));
-        else if (buildIndex == winSceneBuildIndex)
-            musicRoutine = StartCoroutine(SwitchTo(null, null, false));
+        if (isMenu)
+        {
+            invincibleActive = false;
+            StartMusic(SwitchTo(titleScreen, null, true));
+        }
+        else if (isWin)
+        {
+            invincibleActive = false;
+            StartMusic(SwitchTo(null, null, false));
+        }
         else
-            musicRoutine = StartCoroutine(SwitchTo(startLevel, GetThemeForStage(buildIndex), false));
+        {
+            // Entering a stage while the suit is still running: jingle, then the invincible music
+            invincibleActive = invincibleMusic != null && PlayerUpgrades.IsInvincible;
+            AudioClip then = invincibleActive ? invincibleMusic : GetThemeForStage(buildIndex);
+            StartMusic(SwitchTo(startLevel, then, false));
+        }
+    }
+
+    // Watches the Invincible Suit so no other script has to tell us
+    void Update()
+    {
+        if (!inGameplayScene) return;
+
+        bool suit = PlayerUpgrades.IsInvincible;
+
+        if (suit && !invincibleActive && invincibleMusic != null)
+        {
+            invincibleActive = true;
+            StartMusic(SwitchTo(invincibleMusic, null, true));
+        }
+        else if (!suit && invincibleActive)
+        {
+            invincibleActive = false;
+            AudioClip theme = GetThemeForStage(SceneManager.GetActiveScene().buildIndex);
+            StartMusic(SwitchTo(theme, null, true));
+        }
     }
 
     AudioClip GetThemeForStage(int buildIndex)
@@ -100,29 +134,44 @@ public class AudioManager : MonoBehaviour
         return stageTheme;
     }
 
-    // first: plays first. loopFirst: whether it loops. then: (optional) looping clip that follows once 'first' ends.
+    void StartMusic(IEnumerator routine)
+    {
+        if (musicRoutine != null)
+            StopCoroutine(musicRoutine);
+
+        musicRoutine = StartCoroutine(routine);
+    }
+
+    // Fades out what's playing, then plays 'first'. If 'first' doesn't loop and 'then' is set, 'then' loops after it.
     IEnumerator SwitchTo(AudioClip first, AudioClip then, bool loopFirst)
     {
         yield return FadeOutCurrent();
 
-        if (first == null)
+        if (first == null && then == null)
             yield break;
 
-        musicSource.clip = first;
-        musicSource.loop = loopFirst;
-        musicSource.volume = CurrentMusicVolume();
-        musicSource.Play();
+        if (first == null)
+        {
+            PlayClip(then, true);
+            yield break;
+        }
+
+        PlayClip(first, loopFirst);
 
         if (!loopFirst && then != null)
         {
             // Realtime wait so pausing the game (timeScale 0) can't stall the hand-off
             yield return new WaitForSecondsRealtime(first.length);
-
-            musicSource.clip = then;
-            musicSource.loop = true;
-            musicSource.volume = CurrentMusicVolume();
-            musicSource.Play();
+            PlayClip(then, true);
         }
+    }
+
+    void PlayClip(AudioClip clip, bool loop)
+    {
+        musicSource.clip = clip;
+        musicSource.loop = loop;
+        musicSource.volume = CurrentMusicVolume();
+        musicSource.Play();
     }
 
     IEnumerator FadeOutCurrent()
@@ -155,7 +204,6 @@ public class AudioManager : MonoBehaviour
             musicSource.volume = CurrentMusicVolume();
     }
 
-    // For sound effects later: AudioManager.Instance?.PlaySfx(clip);
     public void PlaySfx(AudioClip clip, float volumeScale = 1f)
     {
         if (clip == null || sfxSource == null) return;
@@ -164,24 +212,17 @@ public class AudioManager : MonoBehaviour
 
     public void StopMusic()
     {
-        if (musicRoutine != null)
-            StopCoroutine(musicRoutine);
-
-        musicRoutine = StartCoroutine(SwitchTo(null, null, false));
+        StartMusic(SwitchTo(null, null, false));
     }
-    public float PlayerDiedLength => playerDied != null ? playerDied.length : 0f;
 
     public void PlayPlayerDied()
     {
-        StopMusic();            // stage theme stops right away
-        PlaySfx(playerDied);    // "died" sound plays on top of the fade
+        StopMusic();            // the stage music stops right away
+        PlaySfx(playerDied);
     }
 
     public void PlayGameOver()
     {
-        if (musicRoutine != null)
-            StopCoroutine(musicRoutine);
-
-        musicRoutine = StartCoroutine(SwitchTo(gameOver, null, false)); // plays once, no loop
+        StartMusic(SwitchTo(gameOver, null, false)); // plays once, no loop
     }
 }

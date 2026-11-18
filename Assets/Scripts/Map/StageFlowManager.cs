@@ -34,9 +34,25 @@ public class StageFlowManager : MonoBehaviour
             StageManager.Instance.OnStageComplete += HandleStageComplete;
     }
 
+    private bool grantLifeAfterLoad = true;
+
     void HandleStageComplete()
     {
+        GrantStageLife();
+        int nextIndex = SceneManager.GetActiveScene().buildIndex + 1;
+        grantLifeAfterLoad = nextIndex != winSceneBuildIndex;
+
         Invoke(nameof(BeginTransition), delayBeforeLoad);
+    }
+
+    void GrantStageLife()
+    {
+        if (!grantLifeAfterLoad) return;
+        grantLifeAfterLoad = true;
+
+        var player = FindFirstObjectByType<PlayerHealth>();
+        if (player != null)
+            player.AddLife(1);
     }
 
     void BeginTransition()

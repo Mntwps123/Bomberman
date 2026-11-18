@@ -4529,13 +4529,14 @@ MonoBehaviour:
   titleScreen: {fileID: 8300000, guid: 1aec7a91e4c385248ae018abd44329fb, type: 3}
   startLevel: {fileID: 8300000, guid: 1a4356e0bfa105642ab0f24c2bd0c6a2, type: 3}
   stageTheme: {fileID: 8300000, guid: b909f58d9e6cc20438d3559f36779d37, type: 3}
-  playerDied: {fileID: 8300000, guid: da3e668d715306e4cabd020dba13496d, type: 3}
-  gameOver: {fileID: 8300000, guid: 3cebdbaa90c887042b9937d43f882924, type: 3}
+  invincibleMusic: {fileID: 8300000, guid: 1cf3052ea1a75f44f8ff5a248beb1422, type: 3}
   perStageThemes:
   - {fileID: 8300000, guid: b909f58d9e6cc20438d3559f36779d37, type: 3}
   - {fileID: 8300000, guid: b909f58d9e6cc20438d3559f36779d37, type: 3}
   - {fileID: 8300000, guid: 9512d729a9dfa8d4b84678ed770f6e0b, type: 3}
   - {fileID: 8300000, guid: 9512d729a9dfa8d4b84678ed770f6e0b, type: 3}
+  playerDied: {fileID: 8300000, guid: da3e668d715306e4cabd020dba13496d, type: 3}
+  gameOver: {fileID: 8300000, guid: 3cebdbaa90c887042b9937d43f882924, type: 3}
   musicVolume: 0.6
   sfxVolume: 1
   pausedMusicMultiplier: 0.3

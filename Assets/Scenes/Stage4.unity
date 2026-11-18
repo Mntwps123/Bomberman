@@ -790,7 +790,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GridManager
   debugShowExitBlock: 1
   debugExitColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
-  debugLogLayout: 0
+  debugLogLayout: 1
   width: 31
   height: 13
   tileSize: 1
