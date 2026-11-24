@@ -98,4 +98,19 @@ public class PlayerHealth : MonoBehaviour, IDamageable
 
         OnHealthChanged?.Invoke(currentHealth, startingHealth);
     }
+
+    [Header("Debug")]
+    [SerializeField] private bool allowLifeCheat = true; // untick before you release the game
+
+    void Update()
+    {
+        if (!allowLifeCheat || isDead) return;
+
+        // "+" on the main keyboard is Shift and the "=" key, so both are checked, along with the numpad +
+        if (Input.GetKeyDown(KeyCode.KeypadPlus) ||
+            Input.GetKeyDown(KeyCode.Plus))
+        {
+            AddLife(1);
+        }
+    }
 }

@@ -6,6 +6,8 @@ public class BombPlacer : MonoBehaviour
     [SerializeField] private GameObject bombPrefab;
     [SerializeField] private KeyCode placeBombKey = KeyCode.Space;
     [SerializeField] private KeyCode detonateKey = KeyCode.F;
+    [SerializeField] private KeyCode Remote = KeyCode.Minus;
+    [SerializeField] private KeyCode Remote2 = KeyCode.KeypadMinus;
 
     [Header("Starting stats (upgrades add on top)")]
     [SerializeField] private int startBombs = 1;
@@ -38,6 +40,14 @@ public class BombPlacer : MonoBehaviour
 
     void Update()
     {
+        if (Input.GetKeyDown(Remote) || Input.GetKeyDown(Remote2))
+        {
+            if (PlayerUpgrades.HasRemote)
+                PlayerUpgrades.RemoveRemote();
+            else
+                PlayerUpgrades.GiveRemote();
+        }
+
         if (Input.GetKeyDown(placeBombKey))
             TryPlaceBomb();
 

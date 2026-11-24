@@ -62,6 +62,11 @@ public static class PlayerUpgrades
         return true;
     }
 
+    public static void RemoveRemote()
+    {
+        HasRemote = false;
+    }
+
     public static bool GiveWallPass()
     {
         if (HasWallPass) return false;

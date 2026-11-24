@@ -339,6 +339,12 @@ public class GridManager : MonoBehaviour
         rend.SetPropertyBlock(propBlock);
     }
 
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.KeypadMultiply))
+            HighlightExitBlock(exitTilePos.Value);
+    }
+
     // ================= GRID QUERIES =================
 
     public Vector3 GridToWorld(Vector2Int gridPos) =>

@@ -3092,9 +3092,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 84529750727490a4c97a6b7b3adf5d4a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GridManager
-  debugShowExitBlock: 1
+  debugShowExitBlock: 0
   debugExitColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
-  debugLogLayout: 1
+  debugLogLayout: 0
   width: 31
   height: 13
   tileSize: 1

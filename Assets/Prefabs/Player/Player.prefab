@@ -133,6 +133,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerGridMovement
   moveSpeed: 5
   playerRadius: 0.45
+  speedPerLevel: 0.5
   cornerAssist: 1
   cornerAssistStrength: 3
 --- !u!114 &4501361130986833220
@@ -149,8 +150,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::BombPlacer
   bombPrefab: {fileID: 3385421131015816635, guid: e66ab03b4b014a145ae30e3542183bad, type: 3}
   placeBombKey: 32
-  maxBombs: 1
-  blastRadius: 1
+  detonateKey: 102
+  startBombs: 1
+  startRadius: 1
+  detonateOneAtATime: 0
   clearBuffer: 0.05
 --- !u!114 &5439194834996141323
 MonoBehaviour:
@@ -179,9 +182,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d8e4cf0e0dc5efb42a944eca866254bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerHealth
-  startingHealth: 1000
-  maxHealth: 1000
+  startingHealth: 3
   invincibilityDuration: 1.5
+  allowLifeCheat: 1
 --- !u!1001 &2007985942948452674
 PrefabInstance:
   m_ObjectHideFlags: 0
