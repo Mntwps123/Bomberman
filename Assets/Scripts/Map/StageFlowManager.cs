@@ -168,4 +168,12 @@ public class StageFlowManager : MonoBehaviour
 
         IsTransitioning = false;
     }
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.KeypadDivide))
+        {
+            HandleStageComplete();
+        }
+    }
 }
